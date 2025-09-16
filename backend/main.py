@@ -31,6 +31,14 @@ app.include_router(awareness.router, prefix="/api/awareness", tags=["Awareness"]
 app.include_router(gis.router, prefix="/api/gis", tags=["GIS"])
 app.include_router(offline.router, prefix="/api/offline", tags=["Offline"])
 
+# RBAC route groups
+from routes import rbac
+app.include_router(rbac.router, prefix="/api", tags=["RBAC"])
+
+# Blockchain integrity logs
+from utils import blockchain
+app.include_router(blockchain.router, prefix="/api/blockchain", tags=["Blockchain"])
+
 @app.get("/health-check", tags=["System"])
 async def health_check():
     return {"status": "ok"}

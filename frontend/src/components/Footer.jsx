@@ -1,16 +1,10 @@
 import React from "react";
-import { colors } from "../theme";
 
 export default function Footer() {
   return (
-    <footer style={{
-      background: colors.primary,
-      color: colors.background,
-      textAlign: "center",
-      padding: "1rem",
-      marginTop: "2rem"
-    }}>
-      &copy; {new Date().getFullYear()} Vitanza. All rights reserved.
+    <footer style={{ padding: "2rem 1rem", textAlign: "center", color: "#6B7280", marginTop: 24 }}>
+      <div>© {new Date().getFullYear()} Vitanza. Built with ❤️ for global health monitoring.</div>
+      <div style={{ fontSize: 12, marginTop: 6 }}>Built with v0</div>
     </footer>
   );
 }

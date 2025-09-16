@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
-from jose import jwt
+from jose import jwt, JWTError
 from datetime import datetime, timedelta
-from schemas import UserCreate, UserOut, Token
+from models import UserCreate, UserOut, Token
 from crud import get_user_by_username, create_user
 import os
 
@@ -15,7 +15,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
 def get_db():
     # Implement your DB session retrieval here
-    pass
+    return None
 
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
@@ -47,3 +47,28 @@ async def login(user: UserCreate, db: Session = Depends(get_db)):
         data={"sub": db_user.username, "role": db_user.role}
     )
     return {"access_token": access_token, "token_type": "bearer"}
+
+def get_current_user(token: str) -> dict:
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username: str = payload.get("sub")
+        role: str = payload.get("role")
+        if username is None or role is None:
+            raise HTTPException(status_code=401, detail="Invalid token payload")
+        user = get_user_by_username(None, username)
+        if not user:
+            raise HTTPException(status_code=401, detail="User not found")
+        return user
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+def require_roles(*allowed_roles: str):
+    def dependency(authorization: str | None = None):
+        if not authorization or not authorization.lower().startswith("bearer "):
+            raise HTTPException(status_code=401, detail="Missing bearer token")
+        token = authorization.split(" ", 1)[1]
+        user = get_current_user(token)
+        if user.get("role") not in allowed_roles:
+            raise HTTPException(status_code=403, detail="Forbidden")
+        return user
+    return dependency
