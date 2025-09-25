@@ -3,10 +3,10 @@ from models import HealthReport
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 from datetime import datetime
-from routes.auth import require_roles
+from routes.auth_mongo import require_roles
 
 router = APIRouter()
-MONGO_URI = os.getenv("MONGO_URI")
+MONGO_URI = os.getenv("MONGO_URI") or os.getenv("MONGODB_URI")
 mongo_client = AsyncIOMotorClient(MONGO_URI) if MONGO_URI else None
 db = mongo_client.health_db if mongo_client else None
 
@@ -21,7 +21,7 @@ _health_reports_fallback: list[dict] = [
 ]
 
 @router.post("/", response_model=HealthReport)
-async def submit_health_report(report: HealthReport, user=Depends(require_roles("admin", "officer", "worker"))):
+async def submit_health_report(report: HealthReport, user=Depends(require_roles("admin", "officer", "worker", "community"))):
     if db:
         await db.reports.insert_one(report.dict())
         return report
@@ -29,7 +29,7 @@ async def submit_health_report(report: HealthReport, user=Depends(require_roles(
     return report
 
 @router.get("/", response_model=list[HealthReport])
-async def list_health_reports(user=Depends(require_roles("admin", "officer"))):
+async def list_health_reports(user=Depends(require_roles("admin", "officer", "worker", "community"))):
     if db:
         reports = await db.reports.find().to_list(100)
         return reports

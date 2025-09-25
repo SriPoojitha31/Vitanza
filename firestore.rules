@@ -1,0 +1,68 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Prefer custom claims if you set request.auth.token.role on login
+    function roleFromClaims() {
+      return isSignedIn() && request.auth.token.role != null ? request.auth.token.role : null;
+    }
+
+    // Fallback: read role from users/{uid} document
+    function roleFromProfile() {
+      return isSignedIn() ? get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role : null;
+    }
+
+    function userRole() {
+      return roleFromClaims() != null ? roleFromClaims() : roleFromProfile();
+    }
+
+    function hasRole(allowed) {
+      return isSignedIn() && allowed.hasAny(userRole());
+    }
+
+    // Users: user can read/write own doc; admin can manage
+    match /users/{uid} {
+      allow read: if isSignedIn() && (request.auth.uid == uid || hasRole(['admin']));
+      allow create: if isSignedIn() && request.auth.uid == uid;
+      allow update, delete: if isSignedIn() && (request.auth.uid == uid || hasRole(['admin']));
+    }
+
+    // Health reports: view by all signed-in roles; create by admin/officer/worker/community; modify by admin/officer or owner
+    match /health_reports/{docId} {
+      allow read: if hasRole(['admin','officer','worker','community']);
+      allow create: if hasRole(['admin','officer','worker','community']);
+      allow update, delete: if hasRole(['admin','officer']) ||
+        (isSignedIn() && resource.data.uploadedBy == request.auth.uid);
+    }
+
+    // Water quality: community can view; create by admin/officer/worker; modify by admin/officer
+    match /water_quality/{docId} {
+      allow read: if hasRole(['admin','officer','worker','community']);
+      allow create: if hasRole(['admin','officer','worker']);
+      allow update, delete: if hasRole(['admin','officer']);
+    }
+
+    // Emergency alerts: read by admin/officer/worker; create by admin/officer (typically via backend service)
+    match /emergency_alerts/{docId} {
+      allow read: if hasRole(['admin','officer','worker']);
+      allow create: if hasRole(['admin','officer']);
+      allow update, delete: if hasRole(['admin']);
+    }
+
+    // Communities directory: read by all; write by admin/officer
+    match /communities/{docId} {
+      allow read: if hasRole(['admin','officer','worker','community']);
+      allow create, update, delete: if hasRole(['admin','officer']);
+    }
+
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
+

@@ -4,9 +4,11 @@ sqlalchemy
 psycopg2-binary
 pymongo
 pydantic
+email-validator
 python-jose[cryptography]
-passlib[bcrypt]
-firebase-admin
+passlib[bcrypt]==1.7.4
+bcrypt==4.1.2
+firebase-admin==6.4.0
 requests
 python-dotenv
 pandas
@@ -18,3 +20,4 @@ eth-account
 web3
 motor
 loguru
+pydantic[email]

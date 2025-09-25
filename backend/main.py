@@ -19,17 +19,35 @@ app.add_middleware(
 
 # Import and include routers
 from routes import (
-    health, water, alerts, feedback, awareness, gis, offline, auth
+    health, water, alerts, feedback, awareness, gis, email
 )
+from routes import auth_mongo
+from routes import community
 
-app.include_router(auth.router, prefix="/api/auth", tags=["Auth"])
+app.include_router(auth_mongo.router, prefix="/api/auth", tags=["Auth"])
 app.include_router(health.router, prefix="/api/health", tags=["Health"])
 app.include_router(water.router, prefix="/api/water", tags=["Water"])
 app.include_router(alerts.router, prefix="/api/alerts", tags=["Alerts"])
 app.include_router(feedback.router, prefix="/api/feedback", tags=["Feedback"])
 app.include_router(awareness.router, prefix="/api/awareness", tags=["Awareness"])
 app.include_router(gis.router, prefix="/api/gis", tags=["GIS"])
-app.include_router(offline.router, prefix="/api/offline", tags=["Offline"])
+app.include_router(community.router, prefix="/api/communities", tags=["Communities"])
+app.include_router(email.router, prefix="/api/email", tags=["Email"])
+# Emergency routes are optional; include only if present
+try:
+    from routes import emergency
+    if hasattr(emergency, "router"):
+        app.include_router(emergency.router, prefix="/api", tags=["Emergency"])
+except Exception:
+    pass
+
+# Offline routes are optional; include only if present
+try:
+    from routes import offline
+    if hasattr(offline, "router"):
+        app.include_router(offline.router, prefix="/api/offline", tags=["Offline"])
+except Exception:
+    pass
 
 # RBAC route groups
 from routes import rbac

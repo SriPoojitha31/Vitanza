@@ -6,5 +6,24 @@
   "gis_map": "GIS Map",
   "awareness": "Awareness",
   "feedback": "Feedback",
-  "login": "Login"
+  "login": "Login",
+  "home": {
+    "hero_title": "Smart Health Surveillance",
+    "hero_sub": "Detect, monitor, and prevent water-borne disease outbreaks.",
+    "cta_get_started": "Get Started",
+    "cta_sign_in": "Sign In",
+    "features": {
+      "alerts": "Real-time Alerts",
+      "alerts_desc": "Notify authorities and communities instantly when risks emerge.",
+      "reports": "Community Reports",
+      "reports_desc": "Collect multilingual symptom reports from the field.",
+      "iot": "IoT Water Testing",
+      "iot_desc": "Stream sensor data like turbidity and pH securely.",
+      "ai": "AI Predictions",
+      "ai_desc": "Predict outbreaks using health and environmental signals."
+    },
+    "learn_more": "Learn More",
+    "why_title": "Why Vitanza?",
+    "why_desc": "From clinics to communities, we help detect and respond to water-borne risks faster."
+  }
 }

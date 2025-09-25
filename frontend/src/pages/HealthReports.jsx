@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { fetchHealthReports } from "../services/api";
-import { authHeader } from "../services/auth";
+import { fetchHealthReports, submitHealthReport } from "../services/api";
 
 export default function HealthReports() {
   const [reports, setReports] = useState([]);
@@ -24,9 +23,14 @@ export default function HealthReports() {
       <form onSubmit={async (e)=>{ e.preventDefault();
         const form = new FormData(e.currentTarget);
         const payload = { patient_id: form.get("patient_id"), symptoms: String(form.get("symptoms")).split(",").map(s=>s.trim()).filter(Boolean), location: form.get("location"), timestamp: new Date().toISOString() };
-        await fetch("/api/health", { method: "POST", headers: { "Content-Type": "application/json", ...authHeader() }, body: JSON.stringify(payload) });
-        const next = await fetchHealthReports();
-        setReports(next);
+        try {
+          await submitHealthReport(payload);
+          const next = await fetchHealthReports();
+          setReports(Array.isArray(next) ? next : []);
+        } catch (error) {
+          console.error("Error submitting report:", error);
+          alert("Failed to submit report. Please try again.");
+        }
       }} style={{ background: "white", borderRadius: 12, padding: 12, boxShadow: "0 6px 16px rgba(0,0,0,0.06)", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 8, marginBottom: 12 }}>
         <input name="patient_id" placeholder="Patient ID" style={tdStyle} />
         <input name="symptoms" placeholder="Symptoms (comma)" style={tdStyle} />

@@ -1,0 +1,18 @@
+mutation SeedData @auth(level: USER) {
+  movie_upsertMany(data: [
+    {
+      title: "Inception",
+      genres: ["sci-fi", "action"],
+      year: 2010,
+      runtime: 148,
+      summary: "A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a CEO."
+    },
+    {
+      title: "The Matrix",
+      genres: ["sci-fi", "action"],
+      year: 1999,
+      runtime: 136,
+      summary: "A computer hacker learns from mysterious rebels about the true nature of his reality and his role in the war against its controllers."
+    }
+  ])
+}

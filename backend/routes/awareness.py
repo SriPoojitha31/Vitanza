@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from models import AwarenessContent
-from crud import get_awareness_content
+from crud import get_user_by_username, create_user
 from sqlalchemy.orm import Session
 from routes.auth import require_roles
 from typing import List

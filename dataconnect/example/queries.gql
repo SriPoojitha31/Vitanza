@@ -1,0 +1,37 @@
+mutation AddMovieToList($listId: UUID!, $movieId: UUID!, $position: Int!, $note: String) @auth(level: USER) {
+  listMovie_insert(data: {
+    listId: $listId,
+    movieId: $movieId,
+    position: $position,
+    note: $note
+  })
+}
+
+query GetPublicLists @auth(level: PUBLIC) {
+  lists(where: { public: { eq: true } }) {
+    id
+    name
+    description
+    user {
+      id
+      displayName
+    }
+  }
+}
+
+mutation CreateList($name: String!, $description: String, $public: Boolean!) @auth(level: USER) {
+  list_insert(data: {
+    name: $name,
+    description: $description,
+    public: $public,
+    userId_expr: "auth.uid"
+  })
+}
+
+query GetMoviesByGenre($genre: String!) @auth(level: PUBLIC) {
+  movies(where: { genres: { includes: $genre } }) {
+    id
+    title
+    year
+  }
+}

@@ -1,5 +1,4 @@
 @import 'tailwindcss';
-@import 'tw-animate-css';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -121,5 +120,17 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@keyframes vitanzaLogoSpin {
+  0% {
+    transform: rotateX(18deg) rotateY(0deg) translateZ(0);
+  }
+  50% {
+    transform: rotateX(18deg) rotateY(180deg) translateZ(6px);
+  }
+  100% {
+    transform: rotateX(18deg) rotateY(360deg) translateZ(0);
   }
 }

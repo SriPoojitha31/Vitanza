@@ -31,3 +31,19 @@ In addition to these extension there a few settings that are also useful to enab
 - Test the API functionality by navigating to `/docs` URL to view the Swagger UI
 - Configure your Python test in the Test Panel or by triggering the **Python: Configure Tests** command from the Command Palette
 - Run tests in the Test Panel or by clicking the Play Button next to the individual tests in the `test_main.py` file
+
+## Environment Setup
+
+Create a `.env` file in `backend/` with the following keys (use your values):
+
+```env
+PORT=8000
+CORS_ORIGINS=*
+JWT_SECRET=change-me
+MONGO_URI=mongodb+srv://user:pass@cluster/dbname?retryWrites=true&w=majority
+POSTGRES_URI=postgresql+psycopg2://user:pass@host:5432/dbname
+FIREBASE_PROJECT_ID=your-project-id
+FIREBASE_CLIENT_EMAIL=xxx@xxx.iam.gserviceaccount.com
+FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
+OPENAI_API_KEY=sk-...
+```

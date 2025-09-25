@@ -8,6 +8,8 @@ export default function LanguageSwitcher() {
       <option value="en">English</option>
       <option value="hi">हिंदी</option>
       <option value="te">తెలుగు</option>
+      <option value="bn">বাংলা</option>
+      <option value="as">অসমীয়া</option>
     </select>
   );
 }

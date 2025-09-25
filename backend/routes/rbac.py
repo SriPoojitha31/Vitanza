@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-from routes.auth import require_roles
+from routes.auth_mongo import require_roles
 from typing import List, Optional
 from pydantic import BaseModel
 from datetime import datetime
