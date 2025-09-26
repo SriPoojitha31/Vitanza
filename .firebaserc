@@ -1,6 +1,7 @@
 {
   "projects": {
-    "432": "vitanza-2079f"
+    "432": "vitanza-2079f",
+    "default": "vitanza-2079f"
   },
   "targets": {},
   "etags": {}
