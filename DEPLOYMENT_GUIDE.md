@@ -20,8 +20,8 @@ MONGODB_URI=mongodb://localhost:27017/vitanza
 # DATABASE_URL=postgresql://user:password@localhost:5432/vitanza
 
 # JWT
-JWT_SECRET=your-super-secret-jwt-key-here
-JWT_EXP_MIN=240
+   JWT_SECRET=your-super-secret-jwt-key-here
+   JWT_EXP_MIN=240
 
 # Email (Gmail)
 EMAIL_PASSWORD=your-gmail-app-password

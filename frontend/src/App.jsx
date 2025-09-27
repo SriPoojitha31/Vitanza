@@ -8,7 +8,7 @@ import ProtectedRoute, { GuestRoute } from "./components/ProtectedRoute";
 import AdminDashboard from "./dashboards/AdminDashboard"; //dashboards for different user roles
 import AuthorityDashboard from "./dashboards/AuthorityDashboard";
 import WorkerDashboard from "./dashboards/WorkerDashboard";
-import Awareness from "./pages/Awareness"; //community page
+import Alerts from "./pages/Alerts"; //alerts page
 import Communities from "./pages/Communities";
 import Dashboard from "./pages/Dashboard"; //dashboard page
 import Feedback from "./pages/Feedback"; //feedback page
@@ -35,10 +35,11 @@ function App() {
               <Route path="/dashboard/worker" element={<ProtectedRoute roles={["admin","officer","worker"]}><WorkerDashboard /></ProtectedRoute>} />
               <Route path="/dashboard/community" element={<ProtectedRoute roles={["admin","officer","worker","community"]}><Communities /></ProtectedRoute>} />
               <Route path="/reports" element={<HealthReports />} />
-              <Route path="/community" element={<Awareness />} />
+              <Route path="/community" element={<Communities />} />
+              <Route path="/alerts" element={<Alerts />} />
               <Route path="/assistant" element={<Feedback />} />
               <Route path="/water" element={<WaterQuality />} />
-              <Route path="/alerts" element={<GISMap />} />
+              <Route path="/gis" element={<GISMap />} />
               <Route path="/login" element={<GuestRoute><Login /></GuestRoute>} />
               <Route path="/signup" element={<GuestRoute><Signup /></GuestRoute>} />
               <Route path="*" element={<Navigate to="/" replace />} />
