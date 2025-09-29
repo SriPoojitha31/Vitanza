@@ -20,6 +20,8 @@ class HealthReport(BaseModel):
     symptoms: List[str]
     location: str
     timestamp: str
+    lat: Optional[float] = None
+    lon: Optional[float] = None
 
 class WaterQualityReport(BaseModel):
     sensor_id: str
@@ -27,6 +29,8 @@ class WaterQualityReport(BaseModel):
     turbidity: float
     location: str
     timestamp: str
+    lat: Optional[float] = None
+    lon: Optional[float] = None
 
 class Alert(BaseModel):
     message: str

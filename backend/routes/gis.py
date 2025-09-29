@@ -3,10 +3,10 @@ from models import GISData
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 from datetime import datetime
-from routes.auth import require_roles
+from routes.auth_mongo import require_roles
 
 router = APIRouter()
-MONGO_URI = os.getenv("MONGO_URI")
+MONGO_URI = os.getenv("MONGO_URI") or os.getenv("MONGODB_URI")
 mongo_client = AsyncIOMotorClient(MONGO_URI) if MONGO_URI else None
 db = mongo_client.gis_db if mongo_client else None
 

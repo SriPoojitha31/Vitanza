@@ -38,6 +38,12 @@ class UserOut(BaseModel):
     displayName: Optional[str] = None
     role: str
 
+class UserUpdate(BaseModel):
+    displayName: Optional[str] = None
+    password: Optional[str] = None
+    phone: Optional[str] = None
+    locale: Optional[str] = None
+
 def hash_password(pw: str) -> str:
     return pwd_ctx.hash(pw)
 
@@ -167,5 +173,23 @@ def require_roles(*allowed: str):
 @router.get("/me")
 async def me(user=Depends(get_current_user)):
     return user
+
+@router.put("/me", response_model=UserOut)
+async def update_me(body: UserUpdate, user=Depends(get_current_user), db=Depends(get_mongo_db)):
+    updates: dict = {}
+    if body.displayName is not None:
+        updates["displayName"] = body.displayName
+    if body.phone is not None:
+        updates["phone"] = body.phone
+    if body.locale is not None:
+        updates["locale"] = body.locale
+    if body.password:
+        updates["password"] = hash_password(body.password)
+    if not updates:
+        doc = await db.users.find_one({"_id": ObjectId(user["id"])})
+        return UserOut(id=user["id"], email=doc["email"], displayName=doc.get("displayName"), role=doc.get("role","community"))
+    await db.users.update_one({"_id": ObjectId(user["id"])}, {"$set": updates})
+    doc = await db.users.find_one({"_id": ObjectId(user["id"])})
+    return UserOut(id=user["id"], email=doc["email"], displayName=doc.get("displayName"), role=doc.get("role","community"))
 
 

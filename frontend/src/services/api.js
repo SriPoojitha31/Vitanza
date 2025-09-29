@@ -48,23 +48,23 @@ export async function sendSmsAlert({ message, severity, phone, lang }) {
 
 // RBAC endpoints
 export async function fetchAuthoritySummary() {
-  const res = await fetch(`${API_BASE}/api/authority/summary/`, { headers: { ...authHeader() } });
+  const res = await fetch(`${API_BASE}/api/authority/summary`, { headers: { ...authHeader() } });
   return res.json();
 }
 export async function fetchWaterSummary() {
-  const res = await fetch(`${API_BASE}/api/authority/water-summary/`, { headers: { ...authHeader() } });
+  const res = await fetch(`${API_BASE}/api/authority/water-summary`, { headers: { ...authHeader() } });
   return res.json();
 }
 export async function listCommunities() {
-  const res = await fetch(`${API_BASE}/api/communities/`, { headers: { ...authHeader() } });
+  const res = await fetch(`${API_BASE}/api/communities/community`, { headers: { ...authHeader() } });
   return res.json();
 }
 export async function createCommunity(body) {
-  const res = await fetch(`${API_BASE}/api/communities/`, { method: "POST", headers: { "Content-Type": "application/json", ...authHeader() }, body: JSON.stringify(body) });
+  const res = await fetch(`${API_BASE}/api/communities/community`, { method: "POST", headers: { "Content-Type": "application/json", ...authHeader() }, body: JSON.stringify(body) });
   return res.json();
 }
 export async function deleteCommunity(id) {
-  const res = await fetch(`${API_BASE}/api/communities/${id}`, { method: "DELETE", headers: { ...authHeader() } });
+  const res = await fetch(`${API_BASE}/api/communities/community/${id}`, { method: "DELETE", headers: { ...authHeader() } });
   return res.json();
 }
 

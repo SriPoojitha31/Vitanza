@@ -1,5 +1,8 @@
+import 'leaflet/dist/leaflet.css';
 import React, { useEffect, useState } from 'react';
+import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
 import Card from '../components/Card';
+import { fetchAlerts, fetchHealthReports, fetchWaterReports } from '../services/api';
 
 const Alerts = () => {
   const [alerts, setAlerts] = useState([]);
@@ -14,71 +17,9 @@ const Alerts = () => {
     peopleAffected: 0
   });
 
-  // Sample data matching the reference design
-  const sampleAlerts = [
-    {
-      id: 'alert-001',
-      title: 'Water Contamination Detected',
-      description: 'High bacteria levels found in Borehole B at Green Valley',
-      type: 'water_quality',
-      severity: 'critical',
-      status: 'active',
-      community: 'Green Valley',
-      timestamp: '2024-01-15 14:30',
-      peopleAffected: 2100,
-      actions: [
-        'Water source closed',
-        'Alternative supply arranged',
-        'Health screening initiated'
-      ]
-    },
-    {
-      id: 'alert-002',
-      title: 'Disease Outbreak Alert',
-      description: 'Unusual increase in diarrheal cases reported in Mountain View',
-      type: 'disease_outbreak',
-      severity: 'high',
-      status: 'investigating',
-      community: 'Mountain View',
-      timestamp: '2024-01-14 09:15',
-      peopleAffected: 890,
-      actions: [
-        'Contact tracing started',
-        'Samples collected',
-        'Community notified'
-      ]
-    },
-    {
-      id: 'alert-003',
-      title: 'Equipment Maintenance Required',
-      description: 'Water testing equipment needs calibration',
-      type: 'maintenance',
-      severity: 'medium',
-      status: 'scheduled',
-      community: 'All Communities',
-      timestamp: '2024-01-13 16:45',
-      peopleAffected: 0,
-      actions: [
-        'Maintenance scheduled',
-        'Backup equipment prepared'
-      ]
-    },
-    {
-      id: 'alert-004',
-      title: 'Health Worker Training',
-      description: 'Mandatory training session for new protocols',
-      type: 'training',
-      severity: 'low',
-      status: 'resolved',
-      community: 'Riverside Village',
-      timestamp: '2024-01-12 10:00',
-      peopleAffected: 0,
-      actions: [
-        'Training completed',
-        'Certificates issued'
-      ]
-    }
-  ];
+  // Backend-backed data placeholders
+  const [waterReports, setWaterReports] = useState([]);
+  const [healthReports, setHealthReports] = useState([]);
 
   const recentActivity = [
     {
@@ -108,11 +49,21 @@ const Alerts = () => {
   ];
 
   useEffect(() => {
-    // Simulate API call
-    setTimeout(() => {
-      setAlerts(sampleAlerts);
-      setLoading(false);
-    }, 1000);
+    const load = async () => {
+      try {
+        const [alertsRes, waterRes, healthRes] = await Promise.all([
+          fetchAlerts().catch(() => []),
+          fetchWaterReports().catch(() => []),
+          fetchHealthReports().catch(() => [])
+        ]);
+        setAlerts(Array.isArray(alertsRes) ? alertsRes : []);
+        setWaterReports(Array.isArray(waterRes) ? waterRes : []);
+        setHealthReports(Array.isArray(healthRes) ? healthRes : []);
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
   }, []);
 
   const getSeverityColor = (severity) => {
@@ -206,6 +157,57 @@ const Alerts = () => {
           Create Alert
         </button>
       </div>
+
+      {/* Mini GIS map */}
+      <Card style={{ padding: 0, overflow: 'hidden', marginBottom: '1.5rem' }}>
+        <div style={{ height: 360, width: '100%' }}>
+          <MapContainer center={[17.385, 78.4867]} zoom={10} style={{ height: '100%', width: '100%' }}>
+            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" attribution="&copy; OpenStreetMap contributors" />
+
+            {/* Alerts markers (expects lat/lon in backend data if available) */}
+            {alerts.filter(a => a.lat && a.lon).map((a, idx) => (
+              <Marker key={`a-${idx}`} position={[a.lat, a.lon]}>
+                <Popup>
+                  <div style={{ minWidth: 180 }}>
+                    <div style={{ fontWeight: 600, marginBottom: 4 }}>{a.severity?.toUpperCase() || 'ALERT'}</div>
+                    <div style={{ color: '#374151' }}>{a.message || a.title}</div>
+                    <div style={{ color: '#6b7280', fontSize: 12 }}>{a.timestamp}</div>
+                  </div>
+                </Popup>
+              </Marker>
+            ))}
+
+            {/* Water reports markers (if location present) */}
+            {waterReports.filter(w => w.lat && w.lon).map((w, idx) => (
+              <Marker key={`w-${idx}`} position={[w.lat, w.lon]}>
+                <Popup>
+                  <div style={{ minWidth: 180 }}>
+                    <div style={{ fontWeight: 600, color: '#3B82F6', marginBottom: 4 }}>Water Quality</div>
+                    <div>pH: {w.ph} | Turbidity: {w.turbidity}</div>
+                    {w.risk && <div>Risk: <b>{String(w.risk).toUpperCase()}</b></div>}
+                    <div style={{ color: '#6b7280', fontSize: 12 }}>{w.location || w.sensor_id}</div>
+                  </div>
+                </Popup>
+              </Marker>
+            ))}
+
+            {/* Health reports markers (if location geocoded) */}
+            {healthReports.filter(h => h.lat && h.lon).map((h, idx) => (
+              <Marker key={`h-${idx}`} position={[h.lat, h.lon]}>
+                <Popup>
+                  <div style={{ minWidth: 180 }}>
+                    <div style={{ fontWeight: 600, color: '#8B5CF6', marginBottom: 4 }}>Health Report</div>
+                    {Array.isArray(h.symptoms) && h.symptoms.length > 0 && (
+                      <div>Symptoms: {h.symptoms.join(', ')}</div>
+                    )}
+                    <div style={{ color: '#6b7280', fontSize: 12 }}>{h.timestamp}</div>
+                  </div>
+                </Popup>
+              </Marker>
+            ))}
+          </MapContainer>
+        </div>
+      </Card>
 
       {/* Stats Cards */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: "1.5rem", marginBottom: "1.5rem" }}>

@@ -32,6 +32,8 @@ class SensorIn(BaseModel):
     tds: float
     temp: float
     location: str | None = None
+    lat: float | None = None
+    lon: float | None = None
 
 _predictor = OutbreakRiskPredictor()
 
