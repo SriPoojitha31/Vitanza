@@ -14,7 +14,7 @@ from schemas.hardware import (
 )
 
 # Import database connection (assuming MongoDB)
-from mongo import get_database
+from mongo import get_db
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -39,7 +39,7 @@ async def receive_sensor_data(data: SensorData):
         logger.info(f"Received sensor data from device {data.device_id}: {data.sensor_type} = {data.value} {data.unit}")
         
         # Store in database
-        db = await get_database()
+        db = get_db()
         collection = db["sensor_readings"]
         
         # Convert to dict for MongoDB storage
@@ -68,7 +68,7 @@ async def receive_multi_sensor_data(data: MultiSensorData):
     try:
         logger.info(f"Received multi-sensor data from device {data.device_id}: {len(data.readings)} readings")
         
-        db = await get_database()
+        db = get_db()
         collection = db["sensor_readings"]
         
         # Store each reading
@@ -104,7 +104,7 @@ async def receive_alert(alert: AlertData):
     try:
         logger.warning(f"Received alert from device {alert.device_id}: {alert.alert_type} - {alert.message}")
         
-        db = await get_database()
+        db = get_db()
         collection = db["alerts"]
         
         alert_dict = alert.dict()
@@ -127,7 +127,7 @@ async def get_device_data(device_id: str, limit: int = 100):
     Retrieve sensor data for a specific device.
     """
     try:
-        db = await get_database()
+        db = get_db()
         collection = db["sensor_readings"]
         
         cursor = collection.find({"device_id": device_id}).sort("timestamp", -1).limit(limit)

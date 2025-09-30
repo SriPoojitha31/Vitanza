@@ -3,11 +3,13 @@ import React, { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../assets/Logo.png";
 import { AuthContext } from "../auth/AuthContext";
+import { useI18n } from "../i18n/I18nProvider";
 import LanguageSwitcher from "./LanguageSwitcher";
 import NotificationCenter from "./NotificationCenter";
 
 export default function Navbar() {
   const { user, logout } = useContext(AuthContext);
+  const { t } = useI18n();
   const navigate = useNavigate();
   const [showUserMenu, setShowUserMenu] = useState(false);
 
@@ -72,14 +74,14 @@ export default function Navbar() {
       </div>
       
       <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
-        <Link to="/" style={linkStyle}>Home</Link>
+        <Link to="/" style={linkStyle}>{t('home')}</Link>
         {user && (
           <>
-            <Link to="/dashboard" style={linkStyle}>Dashboard</Link>
-            <Link to="/reports" style={linkStyle}>Reports</Link>
+            <Link to="/dashboard" style={linkStyle}>{t('dashboard')}</Link>
+            <Link to="/reports" style={linkStyle}>{t('health_reports')}</Link>
             <Link to="/community" style={linkStyle}>Community</Link>
             <Link to="/assistant" style={linkStyle}>AI Assistant</Link>
-            <Link to="/water" style={linkStyle}>Water Quality</Link>
+            <Link to="/water" style={linkStyle}>{t('water_quality')}</Link>
             <Link to="/alerts" style={linkStyle}>Alerts</Link>
           </>
         )}
@@ -160,15 +162,15 @@ export default function Navbar() {
                   onMouseLeave={(e) => e.target.style.background = "transparent"}
                 >
                   <LogOut size={16} />
-                  Sign Out
+                  {t('logout')}
                 </button>
               </div>
             )}
           </div>
         ) : (
           <>
-            <Link to="/login" style={{ ...ghostBtn, textDecoration: "none", color: "#111827" }}>Sign In</Link>
-            <Link to="/signup" style={{ ...solidBtn, textDecoration: "none" }}>Sign Up</Link>
+            <Link to="/login" style={{ ...ghostBtn, textDecoration: "none", color: "#111827" }}>{t('login')}</Link>
+            <Link to="/signup" style={{ ...solidBtn, textDecoration: "none" }}>{t('signup')}</Link>
           </>
         )}
       </div>

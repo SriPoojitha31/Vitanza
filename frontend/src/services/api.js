@@ -106,3 +106,23 @@ export async function sendMultilingualAlert(alertData) {
   });
   return res.json();
 }
+
+// Profile management
+export async function updateProfile(body) {
+  const res = await fetch(`${API_BASE}/api/auth/me`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json", ...authHeader() },
+    body: JSON.stringify(body)
+  });
+  return res.json();
+}
+
+// SMS health report submission
+export async function submitHealthReportSMS(formData) {
+  const res = await fetch(`${API_BASE}/api/health/sms`, {
+    method: "POST",
+    headers: { ...authHeader() },
+    body: formData // FormData for Form fields
+  });
+  return res.json();
+}
